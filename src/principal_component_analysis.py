@@ -212,10 +212,6 @@ def pca_trajectory(dataset_path):
     plt.title("Pedestrian Paths Centered")
     plt.show()
 
-
-    # names_x = ['x'+str(i) for i in range(1, 16)]
-    # names_y = ['y' + str(i) for i in range(1, 16)]
-    # names = list(itertools.chain(*zip(names_x, names_y)))
     """
     # Following code centers the dataset and decomposes data using SVD.
     # We also calculate the energies along each of the 30 principal components
