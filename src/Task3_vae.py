@@ -192,41 +192,51 @@ def get_models(prior, original_dim, intermediate_dim, latent_dim):
 
 
 if __name__ == '__main__':
-    # # Hyper-parameters
-    # epochs = 120
-    # learning_rate = 1e-3
-    # batch_size = 128
-    # original_dim = 784
-    # intermediate_dim = 256
-    # latent_dim = 2
-    # prior = tfp.distributions.MultivariateNormalTriL(loc=tf.zeros(latent_dim))  # Do not change this!
-    #
-    # # Get the data
-    # train, test, train_y, test_y = get_mnist_data()
-    #
-    # # Initialise the models
-    # encoder, decoder, vae = get_models(prior, original_dim, intermediate_dim, latent_dim)
-    #
-    # # Train the model
-    # vae.compile(optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
-    #             loss=lambda y_true, y_pred: -y_pred.log_prob(y_true))
-    # history = vae.fit(train, train, epochs=epochs, batch_size=batch_size, validation_data=(test, test))
-    #
-    # # Plot 15 digits samples from prior
-    # plot_digits_from_prior(prior, decoder, n=15)
-    #
-    # # Plot latent representation of test data
-    # plot_latent_repr(encoder, test, test_y, batch_size=batch_size)
-    #
-    # # Plot some original and reconstructed images
-    # plot_reconstructed_original_digits(encoder, decoder,
-    #                                    test[np.random.choice(len(test), size=15, replace=False)])
-    #
-    # # Plot loss vs epoch
-    # plot_loss(history, epochs)
+    """
+    # 2 Latent dimensions
+    # Hyper-parameters
+    
+    You can comment the following block of code until next multiline comment if you want to train
+    on just 1 model or you can chance hyper parameters as you like.
+    """
 
+    epochs = 120
+    learning_rate = 1e-3
+    batch_size = 128
+    original_dim = 784
+    intermediate_dim = 256
+    latent_dim = 2
+    prior = tfp.distributions.MultivariateNormalTriL(loc=tf.zeros(latent_dim))  # Do not change this!
+
+    # Get the data
+    train, test, train_y, test_y = get_mnist_data()
+
+    # Initialise the models
+    encoder, decoder, vae = get_models(prior, original_dim, intermediate_dim, latent_dim)
+
+    # Train the model
+    vae.compile(optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
+                loss=lambda y_true, y_pred: -y_pred.log_prob(y_true))
+    history = vae.fit(train, train, epochs=epochs, batch_size=batch_size, validation_data=(test, test))
+
+    # Plot 15 digits samples from prior
+    plot_digits_from_prior(prior, decoder, n=15)
+
+    # Plot latent representation of test data
+    plot_latent_repr(encoder, test, test_y, batch_size=batch_size)
+
+    # Plot some original and reconstructed images
+    plot_reconstructed_original_digits(encoder, decoder,
+                                       test[np.random.choice(len(test), size=15, replace=False)])
+
+    # Plot loss vs epoch
+    plot_loss(history, epochs)
+
+
+    """
     # Train the model with 32 latent dimensions
     # Hyper-parameters
+    """
     epochs = 100
     learning_rate = 1e-3
     batch_size = 128

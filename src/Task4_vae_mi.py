@@ -306,7 +306,7 @@ if __name__ == '__main__':
     # train_val = train[:200]
     # train = train[200:]
     test = np.load('FireEvac_test_set.npy')
-    # plot_data(train, test)
+    plot_data(train, test)
 
     # Hyper-Parameters
     epochs = 12500
@@ -330,19 +330,22 @@ if __name__ == '__main__':
         # history = vae.fit(train, train, epochs=epochs, batch_size=batch_size)
 
         # Check if there is a trained model before
-        file = h5py.File('vae_mi.h5', 'r')
+        path = "./../models/vae_mi.h5"
+        file = h5py.File(path, 'r')
         weight = []
         for i in range(len(file.keys())):
             weight.append(file['weight' + str(i)][:])
         vae.set_weights(weight)
 
-        file = h5py.File('encoder_mi.h5', 'r')
+        path = "./../models/encoder_mi.h5"
+        file = h5py.File(path, 'r')
         weight = []
         for i in range(len(file.keys())):
             weight.append(file['weight' + str(i)][:])
         encoder.set_weights(weight)
 
-        file = h5py.File('decoder_mi.h5', 'r')
+        path = "./../models/decoder_mi.h5"
+        file = h5py.File(path, 'r')
         weight = []
         for i in range(len(file.keys())):
             weight.append(file['weight' + str(i)][:])
@@ -367,7 +370,7 @@ if __name__ == '__main__':
         plt.plot(gen_pop, range(0, box_pop))
         plt.title("Total_population vs Box_population")
         plt.show()
-        np.save('generated_data', generated)
+        # np.save('generated_data', generated)
 
     except:
 
@@ -389,17 +392,17 @@ if __name__ == '__main__':
         reconstructed = plot_generated_data(prior, decoder, n=1000)
 
         # Save model
-        file = h5py.File('vae_mi.h5', 'w')
+        file = h5py.File('./../models/vae_mi.h5', 'w')
         weight = vae.get_weights()
         for i in range(len(weight)):
             file.create_dataset('weight' + str(i), data=weight[i])
         file.close()
-        file = h5py.File('decoder_mi.h5', 'w')
+        file = h5py.File('./../models/decoder_mi.h5', 'w')
         weight = decoder.get_weights()
         for i in range(len(weight)):
             file.create_dataset('weight' + str(i), data=weight[i])
         file.close()
-        file = h5py.File('encoder_mi.h5', 'w')
+        file = h5py.File('./../models/encoder_mi.h5', 'w')
         weight = encoder.get_weights()
         for i in range(len(weight)):
             file.create_dataset('weight' + str(i), data=weight[i])
