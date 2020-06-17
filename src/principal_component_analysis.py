@@ -171,7 +171,7 @@ def pca_image(image_path):
     # principal component values of 68, 69, 70 to show when the energy loss
     # becomes less than 1%.
     """
-    for num_components in [10, 20, 50, 68, 69, 120, len(s)]:
+    for num_components in [10, 20, 30, 40, 50, 55, 60, 65, 70, 80 , 120]:
         reconstruct_image(num_components, U, s, Vt, explained_variance_ratio)
 
 
