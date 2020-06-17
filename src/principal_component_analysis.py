@@ -6,6 +6,8 @@ from pathlib import Path
 from PIL import Image
 import seaborn as sns
 from skimage.transform import resize
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def pca_svd(dataset_path):
@@ -20,13 +22,14 @@ def pca_svd(dataset_path):
     """
     names = ['x', 'f(x)']
     dataset = pd.read_csv(dataset_path, sep=' ', names=names)
+    print(dataset)
     centered_dataset = (dataset - dataset.mean())
     U, s, Vt = np.linalg.svd(centered_dataset, full_matrices=True)
     """
     # * U and V are the singular matrices, containing orthogonal vectors of
     #   unit length in their rows and columns respectively.
     # 
-    # * S is a diagonal matrix containing the singular values of centered_dataset - these
+    # * s is a diagonal matrix containing the singular values of centered_dataset - these
     #   values squared divided by the number of observations will give the
     #   variance explained by each PC.
     """
@@ -168,7 +171,7 @@ def pca_image(image_path):
     # principal component values of 68, 69, 70 to show when the energy loss
     # becomes less than 1%.
     """
-    for num_components in [10, 50, 68, 69, 120, len(s)]:
+    for num_components in [10, 20, 50, 68, 69, 120, len(s)]:
         reconstruct_image(num_components, U, s, Vt, explained_variance_ratio)
 
 
@@ -186,10 +189,10 @@ def pca_trajectory(dataset_path):
     # x and y coordinates of pedestrian 1 and 2. These correspond to first 4 columns of the dataset.
     # The following plot visualizes the path for first 2 pedestrians through a scatter plot.
     """
-    ped_1_x = ped_path[:, 1]
-    ped_1_y = ped_path[:, 2]
-    ped_2_x = ped_path[:, 3]
-    ped_2_y = ped_path[:, 4]
+    ped_1_x = ped_path[:, 0]
+    ped_1_y = ped_path[:, 1]
+    ped_2_x = ped_path[:, 2]
+    ped_2_y = ped_path[:, 3]
 
     plt.plot(ped_1_x.tolist(), ped_1_y.tolist(), 'r.', alpha=0.7)
     plt.plot(ped_2_x.tolist(), ped_2_y.tolist(), 'g.', alpha=0.7)
@@ -202,10 +205,10 @@ def pca_trajectory(dataset_path):
     # after the x and y values are centered depicting that the shape of the path doesn't change
     # for both pedestrians.
     """
-    ped_1_x = ped_path[:, 1] - ped_path[:, 1].mean()
-    ped_1_y = ped_path[:, 2] - ped_path[:, 2].mean()
-    ped_2_x = ped_path[:, 3] - ped_path[:, 3].mean()
-    ped_2_y = ped_path[:, 4] - ped_path[:, 4].mean()
+    ped_1_x = ped_path[:, 0] - ped_path[:, 0].mean()
+    ped_1_y = ped_path[:, 1] - ped_path[:, 1].mean()
+    ped_2_x = ped_path[:, 2] - ped_path[:, 2].mean()
+    ped_2_y = ped_path[:, 3] - ped_path[:, 3].mean()
 
     plt.plot(ped_1_x.tolist(), ped_1_y.tolist(), 'r.', alpha=0.7)
     plt.plot(ped_2_x.tolist(), ped_2_y.tolist(), 'g.', alpha=0.7)
@@ -218,18 +221,51 @@ def pca_trajectory(dataset_path):
     # of data here.
     """
     ped_dataset = pd.read_csv(dataset_path, sep=' ')
-    centered_dataset = (ped_dataset - ped_dataset.mean())
+    centered_dataset = (ped_dataset - ped_dataset.mean(axis=0))
     U, s, Vt = np.linalg.svd(centered_dataset, full_matrices=True)
     explained_variance_ratio = s ** 2 / np.sum(s ** 2)
 
     """
-    # We plot the energies along each principal component to visualize and analyze the data.
+    # We plot the energies of each principal component to visualize and analyze the data.
     """
     sns.barplot(x=list(range(1, len(explained_variance_ratio)+1)), y=explained_variance_ratio)
     plt.xlabel('Principal Component')
     plt.ylabel('Explained Variance Ratio')
     plt.tight_layout()
     plt.title("Principal Component Energies")
+    plt.show()
+
+    """
+    # We plot dataset along first 2 principal axis.
+    """
+    principalDf = centered_dataset @ Vt.T[:, :2]
+    principalDf.columns = ['principal component 1', 'principal component 2']
+    principalDf.plot(x='principal component 1', y='principal component 2', kind='scatter', alpha=0.7)
+    plt.title("Data Plotted against first 2 principal components")
+    plt.show()
+
+    # principalDf = U[:, :2] @ np.diag(s[:2])
+    # plt.plot(principalDf[:,0], principalDf[:,1])
+    # plt.xlabel('principal component 1')
+    # plt.ylabel('principal component 2')
+    # plt.title("Data Plotted against first 2 principal components")
+    # plt.show()
+
+    """
+    # We plot dataset along first 3 principal axis.
+    """
+    principalDf = centered_dataset @ Vt.T[:, :3]
+    principalDf.columns = ['principal component 1', 'principal component 2', "principal component 3"]
+    threedee = plt.figure().gca(projection='3d')
+
+    threedee.scatter(principalDf['principal component 1'],
+                     principalDf['principal component 2'],
+                     principalDf['principal component 3'],
+                     c=principalDf['principal component 2'], cmap='Blues')
+    threedee.set_xlabel('principal component 1')
+    threedee.set_ylabel('principal component 2')
+    threedee.set_zlabel('principal component 3')
+    plt.title('Data plotted against 3 PCs')
     plt.show()
 
     """
